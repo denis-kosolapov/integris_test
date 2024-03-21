@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка файла</title>
+</head>
+<body>
+    <input type="file" id="fileInput" accept=".csv">
+    <button onclick="uploadFile()">Загрузить файл</button>
+    <div id="status"></div>
+
+    <script>
+        function uploadFile() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                document.getElementById('status').innerText = result;
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке файла:', error);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -15,13 +15,21 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Функция для преобразования строки времени в нормальный формат
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            return date.toLocaleDateString('ru-RU', options);
+        }
+
         // Получение данных с сервера Flask
         fetch('/get_data')
             .then(response => response.json())
             .then(data => {
                 data.forEach(entry => {
-                    var marker = L.marker([entry.latitude, entry.longitude]).addTo(map);
-                    marker.bindPopup(entry.description).openPopup();
+                    var marker = L.marker([entry.lat, entry.lon]).addTo(map);
+                    var formattedTime = formatDate(entry.time); // Преобразование времени
+                    marker.bindPopup(`<b>Время:</b> ${formattedTime}<br><b>Высота:</b> ${entry.altHAE}`).openPopup();
                 });
             });
     </script>
