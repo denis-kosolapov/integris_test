@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта с данными</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+    <div id="map" style="height: 100vh;"></div>
+    <script>
+        var map = L.map('map').setView([55.9671, 37.44795], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Получение данных с сервера Flask
+        fetch('/get_data')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(entry => {
+                    var marker = L.marker([entry.latitude, entry.longitude]).addTo(map);
+                    marker.bindPopup(entry.description).openPopup();
+                });
+            });
+    </script>
+</body>
+</html>
