@@ -3,33 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Загрузка файла</title>
+    <title>Загрузки</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-    <input type="file" id="fileInput" accept=".csv">
-    <button onclick="uploadFile()">Загрузить файл</button>
-    <div id="status"></div>
-
+    <h1>ОТОБРАЗИТЬ ОБЛАСТЬ КООРДИНАТ</h1>
+    <div id="map" style="height: 400px;"></div>
     <script>
-        function uploadFile() {
-            var fileInput = document.getElementById('fileInput');
-            var file = fileInput.files[0];
+        var map = L.map('map').setView([55.9671, 37.44795], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-            var formData = new FormData();
-            formData.append('file', file);
+        // Получение координат точек прямоугольника из Python
+        var rectanglePoints = {{ rectangle_points|tojson }};
 
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(result => {
-                document.getElementById('status').innerText = result;
-            })
-            .catch(error => {
-                console.error('Ошибка при загрузке файла:', error);
-            });
-        }
+        // Отобразить прямоугольник на карте
+        var polygon = L.polygon(rectanglePoints, { color: 'red' }).addTo(map);
+        map.fitBounds(polygon.getBounds());
     </script>
+    <h1>ОТОБРАЗИТЬ ОБЛАКО ТОЧЕК</h1>
+    <div id="map1" style="height: 400px;"></div>
+    <script>
+        var map1 = L.map('map1').setView([55.9671, 37.44795], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map1);
+
+        // Получение данных с сервера Flask
+        fetch('/get_data')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(entry => {
+                    var marker = L.marker([entry.lat, entry.lon]).addTo(map1);
+                    marker.bindPopup(`<b>Время:</b> ${entry.time}<br><b>Высота:</b> ${entry.altHAE}`).openPopup();
+                });
+            });
+    </script>
+
+    <h1>ГРАФИК ИЗМЕНЕНИЯ ВЫСОТЫ ВО ВРЕМЕНИ</h1>
+    <img src="/new_route" alt="Image">
+
 </body>
 </html>

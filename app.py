@@ -1,7 +1,8 @@
 import json
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, url_for, redirect
 import os, io
 from DataProcessing.CalculateBoundary import calculate_boundary
+from StartService import start
 
 
 
@@ -11,11 +12,34 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), "uploaded_files")
 
 
-# Главная страница
-# Здесь просто прямоугольная область координат
+# Страница загрузки файлов
 @app.route('/')
 def index():
-    return render_template('index.html', rectangle_points=calculate_boundary())
+    return render_template('index.html')
+
+
+# Загрузка файла
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return 'Файл не был загружен'
+
+    file = request.files['file']
+    if file.filename == '':
+        return 'Не выбран файл'
+
+    if file:
+        filename = file.filename
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        start()
+        return f'Файл {filename} успешно загружен'
+
+
+# Главная страница
+# Здесь просто прямоугольная область координат
+@app.route('/downloads')
+def downloads():
+    return render_template('downloads.html', rectangle_points=calculate_boundary())
 
 
 # отобразить карту с точками
@@ -36,29 +60,6 @@ def get_data():
 def get_image():
     plot_path = 'images/plot.png'  # Путь к изображению
     return send_file(plot_path, mimetype='image/png')
-
-
-
-# Страница загрузки файлов
-@app.route('/downloads')
-def downloads():
-    return render_template('downloads.html')
-
-
-# Загрузка файла
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return 'Файл не был загружен'
-
-    file = request.files['file']
-    if file.filename == '':
-        return 'Не выбран файл'
-
-    if file:
-        filename = file.filename
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return f'Файл {filename} успешно загружен'
 
 
 if __name__ == '__main__':

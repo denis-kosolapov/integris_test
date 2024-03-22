@@ -20,9 +20,12 @@ class UniqueCoordinatesProcessor:
         self.csv_file = self.find_csv_file()
 
     def find_csv_file(self):
-        for file in os.listdir(self.folder_path):
-            if file.endswith('.csv'):
-                return f"{self.folder_path}/{file}"
+        try:
+            for file in os.listdir(self.folder_path):
+                if file.endswith('.csv'):
+                    return f"{self.folder_path}/{file}"
+        except IOError:
+            raise FileNotFoundError
         return None
 
     # Функция для обработки чанка данных

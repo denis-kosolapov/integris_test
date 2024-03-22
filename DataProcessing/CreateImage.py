@@ -5,11 +5,11 @@ from settings import *
 
 j_file = f'{DATA}/data.json'
 
-# Чтение данных из файла JSON
-with open(j_file, 'r') as file:
-    data = json.load(file)
-
 def create_graphic():
+    # Чтение данных из файла JSON
+    with open(j_file, 'r') as file:
+        data = json.load(file)
+
     # Преобразование данных в DataFrame
     df = pd.DataFrame(data)
 
