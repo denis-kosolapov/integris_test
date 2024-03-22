@@ -22,7 +22,7 @@ def index():
 @app.route('/get_data')
 def get_data():
     # Открываем файл JSON и загружаем данные
-    with open('data.json', 'r') as json_file:
+    with open('data/data.json', 'r') as json_file:
         data = json.load(json_file)
 
     # Выводим первые 100 точек
@@ -34,7 +34,7 @@ def get_data():
 # отобразить картинку
 @app.route('/new_route')
 def get_image():
-    plot_path = 'plot.png'  # Путь к изображению
+    plot_path = 'images/plot.png'  # Путь к изображению
     return send_file(plot_path, mimetype='image/png')
 
 

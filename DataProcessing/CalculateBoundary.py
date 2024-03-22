@@ -1,7 +1,7 @@
-from settings import ROOT
+from settings import *
 import json
 
-j_file = f'{ROOT}/data.json'
+j_file = f'{DATA}/data.json'
 
 def calculate_boundary():
     with open(j_file, 'r') as f:

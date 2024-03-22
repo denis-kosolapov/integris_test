@@ -1,5 +1,5 @@
 import pandas as pd
-from settings import UPLOADED_FILES, ROOT
+from settings import *
 from collections import OrderedDict
 import os
 import asyncio
@@ -113,6 +113,17 @@ class CoordinatesProcessor(UniqueCoordinatesProcessor):
         sorted_dicts = await self.sort_dicts_by_time(dicts_list)
         return sorted_dicts
 
+    def create_json_file(self):
+        processor = CoordinatesProcessor()
+        dicts_list = asyncio.run(processor.main())
+
+        # Путь к выходному JSON файлу
+        json_file = f'{DATA}/data.json'
+
+        # Запись первых 10 точек в новый JSON файл
+        with open(json_file, 'w') as output_json_file:
+            json.dump(dicts_list, output_json_file, indent=4)
+
 # if __name__ == "__main__":
 #     processor = CoordinatesProcessor()
 #     dicts_list = asyncio.run(processor.main())
@@ -127,13 +138,16 @@ class CoordinatesProcessor(UniqueCoordinatesProcessor):
 #     for i in sorted_unique_coordinates:
 #         print(i)
 
-if __name__ == "__main__":
-    processor = CoordinatesProcessor()
-    dicts_list = asyncio.run(processor.main())
+# if __name__ == "__main__":
+#     processor = CoordinatesProcessor()
+#     dicts_list = asyncio.run(processor.main())
+#
+#     # Путь к выходному JSON файлу
+#     output_json_file_path = f'{DATA}/data.json'
+#
+#     # Запись первых 10 точек в новый JSON файл
+#     with open(output_json_file_path, 'w') as output_json_file:
+#         json.dump(dicts_list, output_json_file, indent=4)
 
-    # Путь к выходному JSON файлу
-    output_json_file_path = f'{ROOT}/data.json'
-
-    # Запись первых 10 точек в новый JSON файл
-    with open(output_json_file_path, 'w') as output_json_file:
-        json.dump(dicts_list, output_json_file, indent=4)
+# cp = CoordinatesProcessor()
+# cp.create_json_file()
