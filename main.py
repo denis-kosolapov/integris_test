@@ -1,28 +1,42 @@
-from flask import Flask, render_template, request, jsonify
-import os
+import json
+from flask import Flask, render_template, request, jsonify, send_file
+import os, io
+from DataProcessing.CalculateBoundary import calculate_boundary
+
+
 
 app = Flask(__name__)
 
 # Установка директории для загруженных файлов
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), "uploaded_files")
 
-# JSON данные
-data = [
-    {'time': '2024-02-13T07:18:24.000Z', 'lat': 55.967101667, 'lon': 37.447898333, 'altHAE': 218.2}
-    # Добавьте другие данные по аналогии
-]
-
 
 # Главная страница
+# Здесь просто прямоугольная область координат
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', rectangle_points=calculate_boundary())
 
 
-# Получение данных в формате JSON
+# отобразить карту с точками
 @app.route('/get_data')
 def get_data():
-    return jsonify(data)
+    # Открываем файл JSON и загружаем данные
+    with open('data.json', 'r') as json_file:
+        data = json.load(json_file)
+
+    # Выводим первые 100 точек
+    first_100_points = data[:100]
+
+    # Возвращаем данные в формате JSON
+    return jsonify(first_100_points)
+
+# отобразить картинку
+@app.route('/new_route')
+def get_image():
+    plot_path = 'plot.png'  # Путь к изображению
+    return send_file(plot_path, mimetype='image/png')
+
 
 
 # Страница загрузки файлов
@@ -49,3 +63,7 @@ def upload_file():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+

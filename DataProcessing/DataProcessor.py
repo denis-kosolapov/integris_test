@@ -1,8 +1,9 @@
 import pandas as pd
-from settings import UPLOADED_FILES
+from settings import UPLOADED_FILES, ROOT
 from collections import OrderedDict
 import os
 import asyncio
+import json
 
 
 class UniqueCoordinatesProcessor:
@@ -112,7 +113,6 @@ class CoordinatesProcessor(UniqueCoordinatesProcessor):
         sorted_dicts = await self.sort_dicts_by_time(dicts_list)
         return sorted_dicts
 
-
 # if __name__ == "__main__":
 #     processor = CoordinatesProcessor()
 #     dicts_list = asyncio.run(processor.main())
@@ -126,3 +126,14 @@ class CoordinatesProcessor(UniqueCoordinatesProcessor):
 #     print(len(sorted_unique_coordinates))
 #     for i in sorted_unique_coordinates:
 #         print(i)
+
+if __name__ == "__main__":
+    processor = CoordinatesProcessor()
+    dicts_list = asyncio.run(processor.main())
+
+    # Путь к выходному JSON файлу
+    output_json_file_path = f'{ROOT}/data.json'
+
+    # Запись первых 10 точек в новый JSON файл
+    with open(output_json_file_path, 'w') as output_json_file:
+        json.dump(dicts_list, output_json_file, indent=4)
