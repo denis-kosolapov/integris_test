@@ -1,6 +1,7 @@
 import json
 from flask import Flask, render_template, request, jsonify, send_file, url_for, redirect
-import os, io
+import os
+from settings import *
 from DataProcessing.CalculateBoundary import calculate_boundary
 from StartService import start
 
@@ -15,6 +16,9 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), "uploaded_files")
 # Страница загрузки файлов
 @app.route('/')
 def index():
+    os.makedirs(f"{ROOT}/data")
+    os.makedirs(f"{ROOT}/images")
+    os.makedirs(f"{ROOT}/uploaded_files")
     return render_template('index.html')
 
 
